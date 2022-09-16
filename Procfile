@@ -1,1 +1,1 @@
-web: gunicorn <crowdlearn>.wsgi --log-file -
+web: gunicorn crowdlearn.wsgi
