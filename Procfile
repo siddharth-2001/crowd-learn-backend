@@ -1,1 +1,1 @@
-py manage.py runserver
+web: gunicorn <crowdlearn>.wsgi --log-file -
