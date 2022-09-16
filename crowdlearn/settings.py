@@ -69,7 +69,9 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
+STATIC_URL = 'static/'
 
+STATIC_ROOT = "static/"
 
 ROOT_URLCONF = 'crowdlearn.urls'
 
