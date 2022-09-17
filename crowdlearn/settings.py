@@ -42,8 +42,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'learner',
     'corsheaders',
-    
-
+    'study_session',
+    'teacher'
 
 ]
 
