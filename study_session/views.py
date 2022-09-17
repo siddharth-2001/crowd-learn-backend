@@ -1,9 +1,13 @@
 from datetime import datetime
+from ftplib import all_errors
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+
+from teacher.models import Teacher
 from .serializers import StudySerializer
 from .models import StudySession
 from django.contrib.auth.models import User
+from learner.models import Learner
 
 
 # Create your views here.
@@ -22,10 +26,12 @@ def create_session(request):
     json_response = {}
 
     try:
-
+       
         data = request.data
 
-        student = User.objects.filter(email = data['email'])
+        user = User.objects.get(email = data['email'])
+
+        student = Learner.objects.get(user = user)
 
         new_session = StudySession.objects.create(student = student, date_time = datetime.now(),title = data['title'],details = data['details'])
 
@@ -43,4 +49,21 @@ def create_session(request):
 
         json_response['message'] = 'Failed to create Study Session'
 
-        Response(json_response, status= 400)
+        return Response(json_response, status= 400)
+
+@api_view(['POST'])
+def set_teacher(request):
+
+    data    = request.data
+    user    = User.objects.get(email = data['email'])
+    teacher = Teacher.objects.get_or_create(user = user)[0]
+    session = StudySession.objects.get(id = data['id'])
+    session.teacher = teacher
+    session.save()
+
+    serializer = StudySerializer(session)
+
+    return Response(serializer.data, status = 200)
+
+
+

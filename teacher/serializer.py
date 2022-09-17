@@ -3,6 +3,6 @@ from .models import Teacher
 
 class TeacherSerializer(serializers.ModelSerializer):
 
-    class META:
+    class Meta:
         model = Teacher
         fields = '__all__'
