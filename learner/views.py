@@ -1,4 +1,5 @@
 from distutils.log import error
+from unittest import result
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth.models import User
@@ -94,6 +95,7 @@ def all_learners(request):
 @api_view(['POST'])
 def search_learner(request):
     data = request.data
-    result = Learner.objects.filter(id = data["id"])
-    serializer = LearnerSerializer(result, many = True)
-    return Response(serializer.data, status=200)
+    learner = Learner.objects.get(id = data["id"])
+    result  = User.objects.get(learner = learner)
+    json_response = {"email" : result.email}
+    return Response(json_response, status=200)

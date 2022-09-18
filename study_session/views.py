@@ -46,7 +46,6 @@ def create_session(request):
         return Response(serializer.data, status= 200)
 
     except:
-
         json_response['message'] = 'Failed to create Study Session'
 
         return Response(json_response, status= 400)
