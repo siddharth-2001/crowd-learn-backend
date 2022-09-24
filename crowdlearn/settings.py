@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'learner',
     'corsheaders',
     'study_session',
-    'teacher'
+    'teacher',
+    'django_extensions',
 
 ]
 
