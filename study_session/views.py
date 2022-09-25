@@ -81,5 +81,20 @@ def set_teacher(request):
 
     return Response(serializer.data, status = 200)
 
+@api_view(['POST'])
+def related_session(request):
 
+    data = request.data
+    user = User.objects.get(email = data["email"])
+    student = Learner.objects.get(user = user)
+    session_set = StudySession.objects.filter(student = student)
 
+    serializer   = StudySerializer(session_set, many = True).data
+
+    for element in serializer:
+        learner_serializer = LearnerSerializer(student).data
+        user_serializer = UserSerializer(user).data
+        learner_serializer['user'] = user_serializer
+        element['student'] = learner_serializer
+
+    return Response(serializer, status=200)
