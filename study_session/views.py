@@ -9,7 +9,7 @@ from .models import StudySession
 from django.contrib.auth.models import User
 from learner.models import Learner
 
-from learner.serializers import UserSerializer
+from learner.serializers import UserSerializer,LearnerSerializer
 
 
 # Create your views here.
@@ -38,21 +38,22 @@ def create_session(request):
         new_session = StudySession.objects.create(student = student, date_time = datetime.now(),title = data['title'],details = data['details'])
 
         new_session.save()
-
+        
         serializer = StudySerializer(new_session)
 
         json_response = serializer.data
 
-        learner_id = json_response["student"]
-        related_user = User.objects.get(learner_id = learner_id)
-        user_serializer = UserSerializer(related_user)
-        json_response["student"] = user_serializer.data
+        learner_serializer = LearnerSerializer(student).data
+        user_serializer = UserSerializer(user).data
+        learner_serializer["user"] = user_serializer
+        json_response["student"] = learner_serializer
 
         json_response['message'] = 'Success'
 
-        return Response(serializer.data, status= 200)
+        return Response(json_response, status= 200)
 
-    except:
+    except all_errors as e:
+        print(e)
         json_response['message'] = 'Failed to create Study Session'
 
         return Response(json_response, status= 400)
