@@ -18,8 +18,17 @@ from learner.serializers import UserSerializer,LearnerSerializer
 def all_sessions(request):
 
     all_sessions = StudySession.objects.all()
-    serializer   = StudySerializer(all_sessions, many = True)
-    return Response(serializer.data, status=200)
+    serializer   = StudySerializer(all_sessions, many = True).data
+
+    for element in serializer:
+        learner = Learner.objects.get(id = element['student'])
+        learner_serializer = LearnerSerializer(learner).data
+        user = User.objects.get(learner = learner)
+        user_serializer = UserSerializer(user).data
+        learner_serializer['user'] = user_serializer
+        element['student'] = learner_serializer
+
+    return Response(serializer, status=200)
 
 
 @api_view(['POST'])
