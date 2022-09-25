@@ -1,10 +1,9 @@
-from distutils.log import error
-from unittest import result
+from ftplib import all_errors
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from .models import Learner
-from .serializers import LearnerSerializer
+from .serializers import LearnerSerializer, UserSerializer
 from django.contrib.auth import login, authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -68,18 +67,25 @@ def login_user(request):
         data = request.data
 
         request = request._request
-    
+
         user = authenticate(request, username = data["email"], password = data["password"])
+
+        learner = Learner.objects.get(user = user)
+
+        learner_serializer = LearnerSerializer(learner).data
+        
+        user_serializer = UserSerializer(user)
+        learner_serializer["user"] = user_serializer.data
 
         token = RefreshToken.for_user(user)
 
         login(request,user)
         
-        response_json["access"] = str(token.access_token)
-        response_json["refresh"] = str(token)
-        response_json["message"] = "Logged In"
+        learner_serializer["access"] = str(token.access_token)
+        learner_serializer["refresh"] = str(token)
+        learner_serializer["message"] = "Logged In"
 
-        return Response(response_json, status=200)
+        return Response(learner_serializer, status=200)
 
     except :
         response_json["message"] = "Incorrect Data"
@@ -90,12 +96,25 @@ def login_user(request):
 def all_learners(request):
     learners = Learner.objects.all()
     serializer = LearnerSerializer(learners, many = True)
+
+    for ele in serializer.data:
+        user_id = ele["user"]
+        related_user = User.objects.get(id = user_id)
+        user_serializer = UserSerializer(related_user)
+        ele["user"] = user_serializer.data
+
     return Response(data = serializer.data, status=200)
 
 @api_view(['POST'])
 def search_learner(request):
     data = request.data
     learner = Learner.objects.get(id = data["id"])
-    result  = User.objects.get(learner = learner)
-    json_response = {"email" : result.email}
-    return Response(json_response, status=200)
+
+    learner_serializer = LearnerSerializer(learner).data
+
+    user_id = learner_serializer["user"]
+    related_user = User.objects.get(id = user_id)
+    user_serializer = UserSerializer(related_user)
+    learner_serializer["user"] = user_serializer.data
+
+    return Response(learner_serializer, status=200)
