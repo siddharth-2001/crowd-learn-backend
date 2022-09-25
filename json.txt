@@ -1,0 +1,16 @@
+{
+"email" : "siddharthbharmoria@gmail.com",
+"password" : "12345678",
+"qualification" : "Btech I.T.",
+"first_name" : "Siddharth",
+"last_name" : "Bharmoria"
+}
+
+{
+    "id": 1
+}
+
+{
+"email" : "siddharthbharmoria@gmail.com",
+"password" : "12345678"
+}
