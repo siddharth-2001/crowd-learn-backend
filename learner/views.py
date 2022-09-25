@@ -19,10 +19,10 @@ def register(request):
     json_response  = {}
 
     try:
-        user = User.objects.create_user(data["email"], data["email"], data["password"])
+        user = User.objects.create_user(email = data["email"],username = data["email"],password = data["password"], first_name = data["first_name"], last_name = data["last_name"])
         user.save()
         login(request, user)
-        learner = Learner.objects.create(user=user)
+        learner = Learner.objects.create(user=user, qualification = data["qualification"])
         learner.save()
         #create token for new registered user
         token = RefreshToken.for_user(user)
