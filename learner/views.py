@@ -1,3 +1,4 @@
+import email
 from ftplib import all_errors
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -108,13 +109,12 @@ def all_learners(request):
 @api_view(['POST'])
 def search_learner(request):
     data = request.data
-    learner = Learner.objects.get(id = data["id"])
+    user = User.objects.get(email = data["email"])
+    learner = Learner.objects.get(user = user)
 
     learner_serializer = LearnerSerializer(learner).data
 
-    user_id = learner_serializer["user"]
-    related_user = User.objects.get(id = user_id)
-    user_serializer = UserSerializer(related_user)
+    user_serializer = UserSerializer(user)
     learner_serializer["user"] = user_serializer.data
 
     return Response(learner_serializer, status=200)

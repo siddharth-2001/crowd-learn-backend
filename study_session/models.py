@@ -13,3 +13,4 @@ class StudySession (models.Model):
     details   = models.TextField()
     date_time = models.DateTimeField()
     teacher   = models.ForeignKey(Teacher, default = None, on_delete=models.CASCADE, null=True)
+    meet_link = models.URLField(default="")
